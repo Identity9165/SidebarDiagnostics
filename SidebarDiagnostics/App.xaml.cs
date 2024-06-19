@@ -13,6 +13,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 using SidebarDiagnostics.Monitoring;
 using SidebarDiagnostics.Utilities;
 using SidebarDiagnostics.Windows;
+using Xceed.Wpf.Toolkit;
 
 namespace SidebarDiagnostics
 {
@@ -97,7 +98,7 @@ namespace SidebarDiagnostics
 
         public static void ShowPerformanceCounterError()
         {
-            MessageBoxResult _result = MessageBox.Show(Framework.Resources.ErrorPerformanceCounter, Framework.Resources.ErrorTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            MessageBoxResult _result = System.Windows.MessageBox.Show(Framework.Resources.ErrorPerformanceCounter, Framework.Resources.ErrorTitle, MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
 
             if (_result == MessageBoxResult.OK)
             {
@@ -111,7 +112,7 @@ namespace SidebarDiagnostics
 
             if (_settings != null)
             {
-                _settings.WindowState = WindowState.Normal;
+                _settings.WindowState = System.Windows.WindowState.Normal;
                 _settings.Activate();
                 return;
             }
@@ -178,7 +179,7 @@ namespace SidebarDiagnostics
                     }
                     else if (showInfo)
                     {
-                        MessageBox.Show(Framework.Resources.UpdateSuccessText, Framework.Resources.AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                        System.Windows.MessageBox.Show(Framework.Resources.UpdateSuccessText, Framework.Resources.AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
                     }
                 }
             }
@@ -186,7 +187,7 @@ namespace SidebarDiagnostics
             {
                 if (showInfo)
                 {
-                    MessageBox.Show(Framework.Resources.UpdateErrorText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                    System.Windows.MessageBox.Show(Framework.Resources.UpdateErrorText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
             catch (Exception e)
@@ -200,7 +201,7 @@ namespace SidebarDiagnostics
                     _log.WriteEntry(e.ToString(), EventLogEntryType.Error, 100, 1);
                 }
 
-                MessageBox.Show(Framework.Resources.UpdateErrorFatalText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                System.Windows.MessageBox.Show(Framework.Resources.UpdateErrorFatalText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
             }
 
             return null;
@@ -309,7 +310,7 @@ namespace SidebarDiagnostics
         {
             Exception ex = (Exception)e.ExceptionObject;
 
-            MessageBox.Show(ex.ToString(), Framework.Resources.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            System.Windows.MessageBox.Show(ex.ToString(), Framework.Resources.ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
         }
         
         public Sidebar Sidebar

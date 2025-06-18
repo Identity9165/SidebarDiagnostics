@@ -10,11 +10,11 @@
   "separateMultipleMinor": true,
   "packageRules": [
     {
-      "updateTypes": ["minor", "patch"],
+      "updateTypes": ["minor", "patch"]
     },
     {
       "datasources": ["nuget"],
-      "packagePatterns": ["*"],
+      "packagePatterns": ["*"]
     }
   ],
   "repositories": ["thewriteway/SidebarDiagnostics"]

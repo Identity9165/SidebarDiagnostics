@@ -70,6 +70,7 @@
     <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.8" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
   <ItemGroup>
     <None Update="ChangeLog.json">
@@ -95,9 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibreHardwareMonitor\LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Properties\Resources.ru.Designer.cs" />

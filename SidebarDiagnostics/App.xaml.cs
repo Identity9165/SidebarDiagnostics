@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using Squirrel;
 using Hardcodet.Wpf.TaskbarNotification;
 using SidebarDiagnostics.Monitoring;
 using SidebarDiagnostics.Utilities;
 using SidebarDiagnostics.Windows;
 using Xceed.Wpf.Toolkit;
+using System.Net.Http;
+using Velopack;
 
 namespace SidebarDiagnostics
 {
@@ -141,53 +142,58 @@ namespace SidebarDiagnostics
 
         private async Task AppUpdate(bool showInfo)
         {
-            string _exe = await SquirrelUpdate(showInfo);
-
-            if (_exe != null)
-            {
-                if (Framework.Settings.Instance.RunAtStartup)
-                {
-                    Utilities.Startup.EnableStartupTask(_exe);
-                }
-
-                Process.Start(_exe);
-
-                Shutdown();
-            }
+            // Will exit and restart app internally if an update is applied.
+            await VelopackUpdateAsync(showInfo);
         }
 
-        private async Task<string> SquirrelUpdate(bool showInfo)
+
+        private async Task<bool> VelopackUpdateAsync(bool showInfo)
         {
             try
             {
-                using (UpdateManager _manager = new UpdateManager(ConfigurationManager.AppSettings["CurrentReleaseURL"]))
+                var manager = new UpdateManager(ConfigurationManager.AppSettings["CurrentReleaseURL"]);
+
+                // null => no updates available
+                var info = await manager.CheckForUpdatesAsync();
+                if (info != null)
                 {
-                    UpdateInfo _update = await _manager.CheckForUpdate();
+                    // Optional: show the version you’re going to install
+                    // var newVersion = info.TargetFullRelease?.Version?.ToString();
 
-                    if (_update.ReleasesToApply.Any())
-                    {
-                        Version _newVersion = _update.ReleasesToApply.OrderByDescending(r => r.Version).First().Version.Version;
+                    // Show your progress UI and download
+                    var updateWindow = new Update();
+                    updateWindow.Show();
+                    await manager.DownloadUpdatesAsync(info, p => updateWindow.SetProgress(p));
+                    updateWindow.Close();
 
-                        Update _updateWindow = new Update();
-                        _updateWindow.Show();
+                    // This exits the current process, applies the update, and restarts the app.
+                    manager.ApplyUpdatesAndRestart(info);
 
-                        await _manager.UpdateApp((p) => _updateWindow.SetProgress(p));
-
-                        _updateWindow.Close();
-
-                        return Utilities.Paths.Exe(_newVersion);
-                    }
-                    else if (showInfo)
-                    {
-                        System.Windows.MessageBox.Show(Framework.Resources.UpdateSuccessText, Framework.Resources.AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                    }
+                    // In practice the line above restarts the app; return value is mostly academic.
+                    return true;
+                }
+                else if (showInfo)
+                {
+                    System.Windows.MessageBox.Show(
+                        Framework.Resources.UpdateSuccessText,
+                        Framework.Resources.AppName,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information,
+                        MessageBoxResult.OK,
+                        MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
-            catch (WebException)
+            catch (HttpRequestException)
             {
                 if (showInfo)
                 {
-                    System.Windows.MessageBox.Show(Framework.Resources.UpdateErrorText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                    System.Windows.MessageBox.Show(
+                        Framework.Resources.UpdateErrorText,
+                        Framework.Resources.UpdateErrorTitle,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK,
+                        MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
             catch (Exception e)
@@ -195,17 +201,24 @@ namespace SidebarDiagnostics
                 Framework.Settings.Instance.AutoUpdate = false;
                 Framework.Settings.Instance.Save();
 
-                using (EventLog _log = new EventLog("Application"))
+                using (var log = new EventLog("Application"))
                 {
-                    _log.Source = Framework.Resources.AppName;
-                    _log.WriteEntry(e.ToString(), EventLogEntryType.Error, 100, 1);
+                    log.Source = Framework.Resources.AppName;
+                    log.WriteEntry(e.ToString(), EventLogEntryType.Error, 100, 1);
                 }
 
-                System.Windows.MessageBox.Show(Framework.Resources.UpdateErrorFatalText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                System.Windows.MessageBox.Show(
+                    Framework.Resources.UpdateErrorFatalText,
+                    Framework.Resources.UpdateErrorTitle,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error,
+                    MessageBoxResult.OK,
+                    MessageBoxOptions.DefaultDesktopOnly);
             }
 
-            return null;
+            return false;
         }
+
 
         private void CheckSettings()
         {

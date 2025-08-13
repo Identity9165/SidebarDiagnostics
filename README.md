@@ -40,7 +40,7 @@ Please provide a link to this GitHub repository if reuploading. Thank you.
 
 Written in C# .NET WPF.
 
-Currently compiled in <a href="[https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.19-windows-x64-installer]">.NET 8</a>.
+Currently compiled in <a href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.19-windows-x64-installer">.NET 8</a>.
 
 You will need to run it as administrator.
 
